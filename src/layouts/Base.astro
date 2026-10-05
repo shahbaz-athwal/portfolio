@@ -1,0 +1,85 @@
+---
+import { Font } from "astro:assets";
+import Footer from "@/components/Footer.astro";
+import Nav from "@/components/Nav.astro";
+import { site, socials } from "@/data/site";
+import { cleanPath } from "@/lib/url";
+import "@/styles/global.css";
+
+interface Props {
+  /** Page title; the site name is appended. Omit on the home page. */
+  title?: string;
+  description?: string;
+  /** OG image key, matching a route in `src/pages/og/[...slug].png.ts`. */
+  og?: string;
+  type?: "website" | "article";
+}
+
+const {
+  title,
+  description = site.description,
+  og = "index",
+  type = "website",
+} = Astro.props;
+
+const fullTitle = title ? `${title} — ${site.name}` : site.name;
+const canonical = new URL(cleanPath(Astro.url.pathname), Astro.site);
+const ogImage = new URL(`/og/${og}.png`, Astro.site);
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.name,
+  jobTitle: site.role,
+  url: site.url,
+  sameAs: socials.filter((s) => s.icon !== "mail").map((s) => s.href),
+  alumniOf: "Acadia University",
+};
+
+const speculationRules = {
+  prerender: [{ where: { href_matches: "/*" }, eagerness: "moderate" }],
+};
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content={site.twitter} />
+
+    <Font cssVariable="--font-inter" preload />
+
+    <!-- Apply saved theme before paint (dark is the default). -->
+    <script is:inline>
+      if (localStorage.getItem("theme") === "light") {
+        document.documentElement.classList.remove("dark");
+      }
+    </script>
+    <script type="speculationrules" is:inline set:html={JSON.stringify(speculationRules)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(personJsonLd)} />
+  </head>
+  <body class="flex min-h-dvh flex-col">
+    <Nav />
+    <main class="mx-auto w-full max-w-2xl flex-1 px-5 pt-10 pb-24 sm:pt-16">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,8 +1,5 @@
 {
-  "crons": [
-    {
-      "path": "/api/github",
-      "schedule": "0 2 * * *"
-    }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false
 }
