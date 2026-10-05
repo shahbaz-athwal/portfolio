@@ -1,0 +1,67 @@
+---
+import { Image } from "astro:assets";
+import { education, experience, stack } from "@/data/site";
+import Base from "@/layouts/Base.astro";
+
+const sections = [
+  { heading: "Experience", roles: experience },
+  { heading: "Education", roles: education },
+];
+---
+
+<Base title="Details" description="Experience, education, and tech stack." og="details">
+  <h1 data-reveal class="text-3xl font-semibold tracking-tight text-stone-950 dark:text-stone-50">Details</h1>
+
+  {
+    sections.map(({ heading, roles }, s) => (
+      <section class="mt-12">
+        <h2 data-reveal style={`--i: ${1 + s * 3}`} class="mb-6 text-sm font-medium text-stone-500">{heading}</h2>
+        <ol class="space-y-8">
+          {roles.map((role, i) => (
+            <li data-reveal style={`--i: ${2 + s * 3 + i}`} class="flex gap-4">
+              <div class="grid size-10 shrink-0 place-items-center rounded-full bg-white ring-1 ring-stone-200 dark:ring-stone-800">
+                <Image src={role.logo} alt="" width={48} class="size-6 object-contain" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+                  <h3 class="font-medium text-stone-900 dark:text-stone-100">{role.title}</h3>
+                  <span class="font-mono text-xs text-stone-500">{role.date}</span>
+                </div>
+                <p class="text-sm text-stone-500">{role.org} · {role.location}</p>
+                {role.points && (
+                  <details class="group mt-2">
+                    <summary class="cursor-pointer list-none font-mono text-xs text-stone-500 transition-colors hover:text-stone-900 dark:hover:text-stone-100">
+                      <span class="inline-block transition-transform group-open:rotate-90">→</span> details
+                    </summary>
+                    <ul class="mt-3 space-y-2 text-sm leading-relaxed">
+                      {role.points.map((point) => (
+                        <li class="flex gap-2">
+                          <span class="text-stone-400">–</span>
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+
+  <section class="mt-12">
+    <h2 data-reveal style="--i: 8" class="mb-6 text-sm font-medium text-stone-500">Stack</h2>
+    <dl class="space-y-4">
+      {
+        stack.map(({ category, items }, i) => (
+          <div data-reveal style={`--i: ${9 + i}`} class="grid gap-1 sm:grid-cols-[8rem_1fr] sm:gap-4">
+            <dt class="text-sm text-stone-500">{category}</dt>
+            <dd class="text-sm text-stone-900 dark:text-stone-200">{items.join(" · ")}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+</Base>

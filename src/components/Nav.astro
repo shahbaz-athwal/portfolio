@@ -1,0 +1,44 @@
+---
+import ThemeToggle from "@/components/ThemeToggle.astro";
+import { nav } from "@/data/site";
+
+// Build output uses `format: "file"`, so pathnames may end in `.html`.
+const path = Astro.url.pathname.replace(/(\/index)?\.html$|\/$/, "") || "/";
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
+---
+
+<header class="sticky top-0 z-10 bg-stone-50/80 backdrop-blur dark:bg-stone-950/80">
+  <nav class="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
+    <ul class="-ml-3 flex items-center gap-1 text-sm">
+      {
+        nav.map((link) => {
+          const active = isActive(link.href);
+          return (
+            <li>
+              <a
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                class:list={[
+                  "relative isolate block rounded-full px-3 py-1.5 transition-colors",
+                  active
+                    ? "text-stone-950 dark:text-stone-50"
+                    : "text-stone-500 hover:text-stone-900 dark:hover:text-stone-100",
+                ]}
+              >
+                {active && (
+                  <span
+                    class="absolute inset-0 -z-10 rounded-full bg-stone-200/80 dark:bg-stone-800/80"
+                    style="view-transition-name: nav-indicator"
+                  />
+                )}
+                {link.label}
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+    <ThemeToggle />
+  </nav>
+</header>

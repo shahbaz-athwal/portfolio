@@ -1,0 +1,11 @@
+---
+import { site } from "@/data/site";
+---
+
+<footer class="mx-auto flex w-full max-w-2xl justify-between px-5 py-8 font-mono text-xs text-stone-500">
+  <p>© {new Date().getFullYear()} {site.name}</p>
+  <div class="flex gap-4">
+    <a href="/rss.xml" class="transition-colors hover:text-stone-900 dark:hover:text-stone-100">RSS</a>
+    <a href={site.repo} class="transition-colors hover:text-stone-900 dark:hover:text-stone-100">Source</a>
+  </div>
+</footer>

@@ -1,0 +1,40 @@
+---
+import { render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import Base from "@/layouts/Base.astro";
+import { formatDate, getPosts, type Post, readingTime } from "@/lib/posts";
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Base title={post.data.title} description={post.data.description} og={`blog/${post.id}`} type="article">
+  <article>
+    <a href="/blog" class="font-mono text-xs text-stone-500 transition-colors hover:text-stone-900 dark:hover:text-stone-100">← blog</a>
+    <header class="mt-6 mb-10">
+      <h1 data-reveal class="text-3xl font-semibold tracking-tight text-balance text-stone-950 dark:text-stone-50">
+        {post.data.title}
+      </h1>
+      <p data-reveal style="--i: 1" class="mt-3 font-mono text-xs text-stone-500">
+        <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time>
+        {" · "}{readingTime(post.body)}
+      </p>
+    </header>
+    <div
+      data-reveal
+      style="--i: 2"
+      class="prose prose-stone dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-a:underline-offset-4 prose-pre:rounded-xl prose-pre:border prose-pre:border-stone-200 dark:prose-pre:border-stone-800"
+    >
+      <Content />
+    </div>
+  </article>
+</Base>

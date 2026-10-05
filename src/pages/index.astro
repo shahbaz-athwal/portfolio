@@ -1,0 +1,56 @@
+---
+import Icon from "@/components/Icon.astro";
+import LiveActivity from "@/components/LiveActivity.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+import { projects, skillsHighlight, socials } from "@/data/site";
+import Base from "@/layouts/Base.astro";
+---
+
+<Base>
+  <section class="space-y-5">
+    <h1 data-reveal class="text-3xl font-semibold tracking-tight text-stone-950 dark:text-stone-50">
+      Hi, I'm Shahbaz
+    </h1>
+    <p data-reveal style="--i: 1" class="text-lg leading-relaxed">
+      A full stack developer based in Canada. Senior year computer science
+      student with 2 years of experience in full stack development, currently
+      focusing on backend and DevOps. Proficient in{" "}
+      {
+        skillsHighlight.map((skill, i) => (
+          <>
+            <span class="font-medium text-stone-950 dark:text-stone-100">{skill}</span>
+            {i < skillsHighlight.length - 2 ? ", " : i === skillsHighlight.length - 2 ? ", and " : "."}
+          </>
+        ))
+      }
+    </p>
+    <ul data-reveal style="--i: 2" class="flex gap-4 text-stone-500">
+      {
+        socials.map((s) => (
+          <li>
+            <a href={s.href} aria-label={s.label} class="transition-colors hover:text-stone-900 dark:hover:text-stone-100">
+              <Icon name={s.icon} class="size-5" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <div data-reveal style="--i: 3" class="mt-10">
+    <LiveActivity />
+  </div>
+
+  <section class="mt-16">
+    <h2 data-reveal style="--i: 4" class="mb-6 text-sm font-medium text-stone-500">Projects</h2>
+    <div class="grid gap-10 sm:grid-cols-2 sm:gap-x-6">
+      {
+        projects.map((project, i) => (
+          <div data-reveal style={`--i: ${5 + i}`}>
+            <ProjectCard project={project} />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Base>

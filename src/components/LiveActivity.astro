@@ -1,0 +1,177 @@
+---
+/**
+ * Live Discord presence via Lanyard (https://github.com/Phineas/lanyard).
+ * Shows what's playing on Spotify and the current editor activity.
+ * Vanilla TS over a WebSocket — the only client JS on the page.
+ */
+import { site } from "@/data/site";
+---
+
+<section data-live-activity data-user={site.discordId} hidden class="space-y-2">
+  <h2 class="flex items-center gap-2 font-mono text-xs text-stone-500">
+    <span class="relative flex size-1.5">
+      <span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-60"></span>
+      <span class="relative inline-flex size-1.5 rounded-full bg-emerald-500"></span>
+    </span>
+    Live
+  </h2>
+
+  <a data-slot="spotify" hidden target="_blank" rel="noopener noreferrer" class="activity-card group">
+    <img data-field="art" alt="" width="48" height="48" class="size-12 shrink-0 rounded-md bg-stone-200 object-cover dark:bg-stone-800" />
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-sm font-medium text-stone-900 group-hover:underline dark:text-stone-100" data-field="song"></p>
+      <p class="truncate text-xs text-stone-500" data-field="artist"></p>
+      <div class="mt-2 flex items-center gap-2 font-mono text-[10px] text-stone-500 tabular-nums">
+        <span data-field="elapsed">0:00</span>
+        <div class="h-1 flex-1 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-800">
+          <div data-field="progress" class="h-full w-0 rounded-full bg-stone-500 transition-[width] duration-1000 ease-linear dark:bg-stone-300"></div>
+        </div>
+        <span data-field="total">0:00</span>
+      </div>
+    </div>
+  </a>
+
+  <div data-slot="code" hidden class="activity-card">
+    <img data-field="icon" alt="" width="48" height="48" class="size-12 shrink-0 rounded-md bg-stone-200 object-cover dark:bg-stone-800" />
+    <div class="min-w-0 flex-1">
+      <p class="truncate text-sm font-medium text-stone-900 dark:text-stone-100" data-field="name"></p>
+      <p class="truncate text-xs text-stone-500" data-field="details"></p>
+      <p class="truncate text-xs text-stone-500" data-field="state"></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  @reference "@/styles/global.css";
+
+  .activity-card {
+    @apply flex items-center gap-3 rounded-xl border border-stone-200 p-3 transition-colors dark:border-stone-800;
+  }
+  a.activity-card:hover {
+    @apply border-stone-300 dark:border-stone-700;
+  }
+  .activity-card:not([hidden]) {
+    animation: reveal 500ms var(--ease-out-soft) both;
+  }
+</style>
+
+<script>
+  type Activity = {
+    name: string;
+    application_id?: string;
+    details?: string;
+    state?: string;
+    timestamps?: { start?: number; end?: number };
+    assets?: { large_image?: string; large_text?: string };
+  };
+
+  type Spotify = {
+    song: string;
+    artist: string;
+    album: string;
+    album_art_url: string;
+    track_id: string;
+    timestamps: { start: number; end: number };
+  };
+
+  type Presence = {
+    listening_to_spotify: boolean;
+    spotify: Spotify | null;
+    activities: Activity[];
+  };
+
+  const EDITORS = new Set(["Visual Studio Code", "Cursor", "Zed"]);
+
+  const root = document.querySelector<HTMLElement>("[data-live-activity]");
+  if (root?.dataset.user) connect(root, root.dataset.user);
+
+  function connect(root: HTMLElement, userId: string, attempt = 0) {
+    const ws = new WebSocket("wss://api.lanyard.rest/socket");
+    let heartbeat: number | undefined;
+
+    ws.addEventListener("message", (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.op === 1) {
+        heartbeat = window.setInterval(
+          () => ws.send(JSON.stringify({ op: 3 })),
+          msg.d.heartbeat_interval,
+        );
+        ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: userId } }));
+        attempt = 0;
+      } else if (msg.t === "INIT_STATE" || msg.t === "PRESENCE_UPDATE") {
+        render(root, msg.d as Presence);
+      }
+    });
+
+    ws.addEventListener("close", () => {
+      window.clearInterval(heartbeat);
+      const delay = Math.min(1000 * 2 ** attempt, 30_000);
+      window.setTimeout(() => connect(root, userId, attempt + 1), delay);
+    });
+  }
+
+  let ticker: number | undefined;
+
+  function render(root: HTMLElement, presence: Presence) {
+    const spotify = presence.listening_to_spotify ? presence.spotify : null;
+    const code = presence.activities.find((a) => EDITORS.has(a.name));
+
+    renderSpotify(slot(root, "spotify"), spotify);
+    renderCode(slot(root, "code"), code);
+    root.hidden = !spotify && !code;
+  }
+
+  function renderSpotify(el: HTMLAnchorElement, spotify: Spotify | null) {
+    window.clearInterval(ticker);
+    el.hidden = !spotify;
+    if (!spotify) return;
+
+    el.href = `https://open.spotify.com/track/${spotify.track_id}`;
+    const art = field<HTMLImageElement>(el, "art");
+    art.src = spotify.album_art_url;
+    art.alt = spotify.album;
+    field(el, "song").textContent = spotify.song;
+    field(el, "artist").textContent = spotify.artist.replaceAll(";", ",");
+
+    const { start, end } = spotify.timestamps;
+    field(el, "total").textContent = formatTime(end - start);
+    const tick = () => {
+      const elapsed = Math.min(Date.now() - start, end - start);
+      field(el, "elapsed").textContent = formatTime(elapsed);
+      field(el, "progress").style.width = `${(elapsed / (end - start)) * 100}%`;
+    };
+    tick();
+    ticker = window.setInterval(tick, 1000);
+  }
+
+  function renderCode(el: HTMLElement, code: Activity | undefined) {
+    el.hidden = !code;
+    if (!code) return;
+
+    const icon = field<HTMLImageElement>(el, "icon");
+    const asset = code.assets?.large_image;
+    icon.hidden = !asset;
+    if (asset) {
+      icon.src = asset.startsWith("mp:external/")
+        ? `https://media.discordapp.net/external/${asset.slice(12)}`
+        : `https://cdn.discordapp.com/app-assets/${code.application_id}/${asset}.png`;
+      icon.alt = code.assets?.large_text ?? code.name;
+    }
+    field(el, "name").textContent = code.name;
+    field(el, "details").textContent = code.details ?? "";
+    field(el, "state").textContent = code.state ?? "";
+  }
+
+  function slot<T extends HTMLElement = HTMLAnchorElement>(root: HTMLElement, name: string) {
+    return root.querySelector(`[data-slot="${name}"]`) as T;
+  }
+
+  function field<T extends HTMLElement = HTMLElement>(root: HTMLElement, name: string) {
+    return root.querySelector(`[data-field="${name}"]`) as T;
+  }
+
+  function formatTime(ms: number) {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  }
+</script>

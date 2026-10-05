@@ -1,0 +1,78 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    scrollbar-gutter: stable;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-stone-50 text-stone-800 antialiased dark:bg-stone-950 dark:text-stone-300;
+  }
+  ::selection {
+    @apply bg-stone-800 text-stone-50 dark:bg-stone-200 dark:text-stone-900;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-stone-500;
+  }
+}
+
+/* ---------- Motion ----------
+ * Entrance: add `data-reveal` to an element; set `--i` for stagger order.
+ * Page changes use native cross-document view transitions (no JS).
+ */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(2px);
+  }
+}
+
+[data-reveal] {
+  animation: reveal 600ms var(--ease-out-soft) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+}
+
+::view-transition-group(nav-indicator) {
+  animation-duration: 300ms;
+  animation-timing-function: var(--ease-out-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after,
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- Code blocks (Shiki dual theme) ---------- */
+.dark .astro-code,
+.dark .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+}
