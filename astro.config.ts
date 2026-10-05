@@ -4,7 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 
 export default defineConfig({
-  site: "https://shahcodes.in",
+  // Keep in sync with `site.url` in src/data/site.ts.
+  site: "https://shbz-me.vercel.app",
   output: "static",
   trailingSlash: "never",
   build: { format: "file" },

@@ -1,4 +1,4 @@
-# shahcodes.in
+# shbz.me
 
 Personal portfolio and blog. Static [Astro](https://astro.build) site with MDX posts,
 build-time OG images via [Takumi](https://takumi.kane.tw), and live Discord/Spotify

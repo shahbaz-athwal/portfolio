@@ -15,7 +15,7 @@ export const site = {
   name: "Shahbaz Singh",
   title: "Shahbaz Singh",
   role: "Full Stack Developer",
-  url: "https://shahcodes.in",
+  url: "https://shbz-me.vercel.app",
   description: "A full stack developer based in Canada.",
   twitter: "@shahcodes",
   repo: "https://github.com/shahbaz-athwal/portfolio",
@@ -120,7 +120,7 @@ export const projects: Project[] = [
   {
     title: "Portfolio",
     description: "This site — portfolio and blog",
-    href: "https://shahcodes.in",
+    href: "https://shbz-me.vercel.app",
     code: "https://github.com/shahbaz-athwal/portfolio",
     image: portfolio,
     tags: ["Astro", "MDX", "Tailwind", "Takumi", "Lanyard"],

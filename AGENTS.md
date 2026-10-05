@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Personal portfolio and MDX blog for Shahbaz Singh — https://shahcodes.in.
+Personal portfolio and MDX blog for Shahbaz Singh — https://shbz-me.vercel.app (Vercel project `shbz.me`).
 Static Astro site. Optimise for: tiny pages, zero unnecessary JS, subtle motion.
 
 ## Commands (Bun only — never npm/pnpm/yarn)
@@ -83,6 +83,12 @@ The slug is the filename. OG image, RSS entry, and sitemap entry are generated a
 1. Create `src/pages/<name>.astro` using `<Base title="…" description="…" og="<name>">`.
 2. Add an entry for `<name>` in `src/pages/og/[...slug].png.ts`.
 3. Add it to `nav` in `src/data/site.ts` if it should appear in the header.
+
+## Deployment
+
+Vercel project `shbz.me` (Git-connected). Pushes to `master` deploy to production at
+https://shbz-me.vercel.app; every other branch/PR gets a preview deployment (behind Vercel login).
+The canonical URL is set in two places: `site` in `astro.config.ts` and `site.url` in `src/data/site.ts`.
 
 ## Live activity
 
