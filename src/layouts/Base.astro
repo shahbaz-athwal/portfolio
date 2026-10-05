@@ -3,6 +3,7 @@ import { Font } from "astro:assets";
 import Footer from "@/components/Footer.astro";
 import Nav from "@/components/Nav.astro";
 import { site, socials } from "@/data/site";
+import { cleanPath } from "@/lib/url";
 import "@/styles/global.css";
 
 interface Props {
@@ -22,7 +23,7 @@ const {
 } = Astro.props;
 
 const fullTitle = title ? `${title} — ${site.name}` : site.name;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const canonical = new URL(cleanPath(Astro.url.pathname), Astro.site);
 const ogImage = new URL(`/og/${og}.png`, Astro.site);
 
 const personJsonLd = {

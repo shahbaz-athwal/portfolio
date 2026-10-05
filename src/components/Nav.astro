@@ -1,9 +1,9 @@
 ---
 import ThemeToggle from "@/components/ThemeToggle.astro";
 import { nav } from "@/data/site";
+import { cleanPath } from "@/lib/url";
 
-// Build output uses `format: "file"`, so pathnames may end in `.html`.
-const path = Astro.url.pathname.replace(/(\/index)?\.html$|\/$/, "") || "/";
+const path = cleanPath(Astro.url.pathname);
 const isActive = (href: string) =>
   href === "/" ? path === "/" : path === href || path.startsWith(`${href}/`);
 ---
