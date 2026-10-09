@@ -5,7 +5,7 @@ import { defineConfig, fontProviders } from "astro/config";
 
 export default defineConfig({
   // Single canonical origin; `site.url` in src/data/site.ts reads it via import.meta.env.SITE.
-  site: "https://shbz-me.vercel.app",
+  site: "https://shbz.me",
   output: "static",
   trailingSlash: "never",
   build: { format: "file" },
