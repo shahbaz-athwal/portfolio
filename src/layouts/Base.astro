@@ -37,7 +37,7 @@ const personJsonLd = {
 };
 
 const speculationRules = {
-  prerender: [{ where: { href_matches: "/*" }, eagerness: "moderate" }],
+  prefetch: [{ where: { href_matches: "/*" }, eagerness: "moderate" }],
 };
 ---
 
@@ -66,11 +66,11 @@ const speculationRules = {
 
     <Font cssVariable="--font-inter" preload />
 
-    <!-- Apply saved theme before paint (dark is the default). -->
+    <!-- Apply saved theme before paint (dark is the default); pageshow re-applies it on bfcache restores, which don't re-run scripts. -->
     <script is:inline>
-      if (localStorage.getItem("theme") === "light") {
-        document.documentElement.classList.remove("dark");
-      }
+      const applyTheme = () => document.documentElement.classList.toggle("dark", localStorage.getItem("theme") !== "light");
+      applyTheme();
+      window.addEventListener("pageshow", applyTheme);
     </script>
     <script type="speculationrules" is:inline set:html={JSON.stringify(speculationRules)} />
     <script type="application/ld+json" is:inline set:html={JSON.stringify(personJsonLd)} />

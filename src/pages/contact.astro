@@ -15,7 +15,7 @@ import Base from "@/layouts/Base.astro";
     {
       socials.map((s, i) => (
         <li data-reveal style={`--i: ${2 + i}`}>
-          <a href={s.href} target="_blank" rel="noopener" class="group flex items-center gap-4 py-4">
+          <a href={s.href} target={s.href.startsWith("mailto:") ? undefined : "_blank"} rel="noopener" class="group flex items-center gap-4 py-4">
             <Icon name={s.icon} class="size-4 text-stone-500" />
             <span class="w-20 text-sm text-stone-500">{s.label}</span>
             <span class="flex-1 text-stone-900 dark:text-stone-100">{s.handle}</span>
@@ -58,7 +58,11 @@ import Base from "@/layouts/Base.astro";
     const status = form.querySelector<HTMLElement>("[data-status]");
     const button = form.querySelector("button");
     const content = String(new FormData(form).get("message") ?? "").trim();
-    if (!status || !button || content.length < 3) return;
+    if (!status || !button) return;
+    if (content.length < 3) {
+      status.textContent = "Please write a little more.";
+      return;
+    }
 
     button.disabled = true;
     status.textContent = "Sending…";
