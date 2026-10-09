@@ -2,19 +2,21 @@
 import Icon from "@/components/Icon.astro";
 import { socials } from "@/data/site";
 import Base from "@/layouts/Base.astro";
+
+let n = 0;
 ---
 
 <Base title="Contact" description="Get in touch for questions or collaborations." og="contact">
-  <h1 data-reveal class="text-3xl font-semibold tracking-tight text-stone-950 dark:text-stone-50">Contact</h1>
-  <p data-reveal style="--i: 1" class="mt-5 text-lg leading-relaxed">
+  <h1 data-reveal style={`--i: ${n++}`} class="text-3xl font-semibold tracking-tight text-stone-950 dark:text-stone-50">Contact</h1>
+  <p data-reveal style={`--i: ${n++}`} class="mt-5 text-lg leading-relaxed">
     If you'd like to get in touch, reach me through any of the following. I'm
     open to freelance projects and collaborations.
   </p>
 
   <ul class="mt-10 divide-y divide-stone-200 border-y border-stone-200 dark:divide-stone-800 dark:border-stone-800">
     {
-      socials.map((s, i) => (
-        <li data-reveal style={`--i: ${2 + i}`}>
+      socials.map((s) => (
+        <li data-reveal style={`--i: ${n++}`}>
           <a href={s.href} target={s.href.startsWith("mailto:") ? undefined : "_blank"} rel="noopener" class="group flex items-center gap-4 py-4">
             <Icon name={s.icon} class="size-4 text-stone-500" />
             <span class="w-20 text-sm text-stone-500">{s.label}</span>
@@ -26,7 +28,7 @@ import Base from "@/layouts/Base.astro";
     }
   </ul>
 
-  <section data-reveal style="--i: 7" class="mt-14">
+  <section data-reveal style={`--i: ${n++}`} class="mt-14">
     <h2 class="text-sm font-medium text-stone-500">Leave an anonymous message</h2>
     <form data-whisper class="mt-4 space-y-3">
       <textarea

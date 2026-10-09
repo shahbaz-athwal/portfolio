@@ -28,20 +28,20 @@
 }
 
 /* ---------- Motion ----------
- * Entrance: add `data-reveal` to an element; set `--i` for stagger order.
+ * Entrance: add `data-reveal` to an element; `--i` sets stagger order and the
+ * delay stops growing after 8 steps.
  * Page changes use native cross-document view transitions (no JS).
  */
 @keyframes reveal {
   from {
     opacity: 0;
     transform: translateY(8px);
-    filter: blur(2px);
   }
 }
 
 [data-reveal] {
   animation: reveal 600ms var(--ease-out-soft) both;
-  animation-delay: calc(var(--i, 0) * 70ms);
+  animation-delay: calc(min(var(--i, 0), 8) * 70ms);
 }
 
 @view-transition {

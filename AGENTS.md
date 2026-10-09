@@ -58,7 +58,8 @@ public/                   ← copied verbatim (favicon only)
 
 Subtle and CSS-only. Respect `prefers-reduced-motion` (handled globally).
 
-- Entrance: add `data-reveal` and a stagger index `style="--i: N"` to an element.
+- Entrance: add `data-reveal` and a stagger index `style="--i: N"` to an element. The delay caps at 8 steps.
+  Where revealed elements follow a data-driven list, use a running counter instead of computed indices: `let n = 0;` in the frontmatter, then ``style={`--i: ${n++}`}`` in document order.
 - Page transitions: native cross-document View Transitions (`@view-transition` in CSS) — no router JS.
 - Shared-element morph: give an element a `view-transition-name` (see the nav indicator).
 - Easing token: `ease-out-soft`. Keep durations 150–600ms, distances ≤ 8px.
