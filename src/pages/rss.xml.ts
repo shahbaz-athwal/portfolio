@@ -3,12 +3,12 @@ import type { APIRoute } from "astro";
 import { site } from "@/data/site";
 import { getPosts } from "@/lib/posts";
 
-export const GET: APIRoute = async (context) => {
+export const GET: APIRoute = async () => {
   const posts = await getPosts();
   return rss({
     title: site.name,
     description: site.description,
-    site: context.site ?? site.url,
+    site: site.url,
     trailingSlash: false,
     items: posts.map((post) => ({
       title: post.data.title,

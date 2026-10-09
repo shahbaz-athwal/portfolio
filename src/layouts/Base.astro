@@ -8,13 +8,12 @@ import { cleanPath } from "@/lib/url";
 import "@/styles/global.css";
 
 /** A static page (a `pages` key) or a blog post; sets <head>, the OG image and og:type. */
-type Props = { page: Page } | { post: Post };
+type Props = { page: Page; post?: never } | { post: Post; page?: never };
 
 const props = Astro.props;
-const { title, description, og, type } =
-  "post" in props
-    ? { ...props.post.data, og: `blog/${props.post.id}`, type: "article" }
-    : { ...pages[props.page], og: props.page, type: "website" };
+const { title, description, og, type } = props.post
+  ? { ...props.post.data, og: `blog/${props.post.id}`, type: "article" }
+  : { ...pages[props.page], og: props.page, type: "website" };
 
 const fullTitle = og === "index" ? site.name : `${title} — ${site.name}`;
 const canonical = new URL(cleanPath(Astro.url.pathname), Astro.site);

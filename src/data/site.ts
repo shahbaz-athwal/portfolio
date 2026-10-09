@@ -44,9 +44,7 @@ export const pages = {
 
 export type Page = keyof typeof pages;
 
-export type NavLink = { label: string; href: string };
-
-export const nav: NavLink[] = [
+export const nav = [
   { label: "About", href: "/" },
   { label: "Details", href: "/details" },
   { label: "Blog", href: "/blog" },
@@ -195,7 +193,7 @@ export const education: Role[] = [
   },
 ];
 
-export const stack: { category: string; items: string[] }[] = [
+export const stack = [
   {
     category: "Frontend",
     items: [
