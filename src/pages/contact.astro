@@ -1,12 +1,12 @@
 ---
 import Icon from "@/components/Icon.astro";
-import { socials } from "@/data/site";
+import { site, socials } from "@/data/site";
 import Base from "@/layouts/Base.astro";
 
 let n = 0;
 ---
 
-<Base title="Contact" description="Get in touch for questions or collaborations." og="contact">
+<Base page="contact">
   <h1 data-reveal style={`--i: ${n++}`} class="text-3xl font-semibold tracking-tight text-stone-950 dark:text-stone-50">Contact</h1>
   <p data-reveal style={`--i: ${n++}`} class="mt-5 text-lg leading-relaxed">
     If you'd like to get in touch, reach me through any of the following. I'm
@@ -31,8 +31,9 @@ let n = 0;
   <section data-reveal style={`--i: ${n++}`} class="mt-14">
     <h2 class="text-sm font-medium text-stone-500">Leave an anonymous message</h2>
     <form data-whisper class="mt-4 space-y-3">
+      <input type="hidden" name="username" value={site.whisperella} />
       <textarea
-        name="message"
+        name="content"
         rows="3"
         required
         minlength="3"
@@ -59,7 +60,9 @@ let n = 0;
     event.preventDefault();
     const status = form.querySelector<HTMLElement>("[data-status]");
     const button = form.querySelector("button");
-    const content = String(new FormData(form).get("message") ?? "").trim();
+    const data = new FormData(form);
+    const content = String(data.get("content") ?? "").trim();
+    const username = String(data.get("username") ?? "");
     if (!status || !button) return;
     if (content.length < 3) {
       status.textContent = "Please write a little more.";
@@ -72,7 +75,7 @@ let n = 0;
       const res = await fetch("https://whisperella.shahcodes.in/api/sendmessage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, username: "shahbazathwal2107" }),
+        body: JSON.stringify({ content, username }),
       });
       if (!res.ok) throw new Error(String(res.status));
       form.reset();

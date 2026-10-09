@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 
 export default defineConfig({
-  // Keep in sync with `site.url` in src/data/site.ts.
+  // Single canonical origin; `site.url` in src/data/site.ts reads it via import.meta.env.SITE.
   site: "https://shbz-me.vercel.app",
   output: "static",
   trailingSlash: "never",

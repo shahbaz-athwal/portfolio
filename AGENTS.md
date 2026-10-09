@@ -27,12 +27,12 @@ Always run `bun run check` before finishing. It must pass with zero errors.
 
 ```
 src/
-  data/site.ts            ← ALL site content: profile, nav, socials, projects, experience, stack
+  data/site.ts            ← ALL site content: profile, nav, socials, projects, experience, stack, page meta
   content/blog/*.mdx      ← blog posts (schema in src/content.config.ts)
   content.config.ts       ← blog collection schema (zod)
   layouts/Base.astro      ← <head>, SEO/OG meta, theme script, nav, footer
   pages/                  ← file-based routes
-    og/[...slug].png.ts   ← build-time OG images; one entry per page
+    og/[...slug].png.ts   ← build-time OG images; one per `pages` entry (site.ts) and per post
   components/             ← .astro components (Nav, Icon, ProjectCard, LiveActivity, …)
   lib/                    ← helpers (posts.ts, og.ts)
   styles/global.css       ← Tailwind entry, theme tokens, motion primitives
@@ -81,15 +81,15 @@ The slug is the filename. OG image, RSS entry, and sitemap entry are generated a
 
 ## Adding a page
 
-1. Create `src/pages/<name>.astro` using `<Base title="…" description="…" og="<name>">`.
-2. Add an entry for `<name>` in `src/pages/og/[...slug].png.ts`.
+1. Create `src/pages/<name>.astro` using `<Base page="<name>">`.
+2. Add `<name>` with its title and description to `pages` in `src/data/site.ts` (drives `<title>`, meta description and the OG image — TypeScript errors if it's missing).
 3. Add it to `nav` in `src/data/site.ts` if it should appear in the header.
 
 ## Deployment
 
 Vercel project `shbz.me` (Git-connected). Pushes to `master` deploy to production at
 https://shbz-me.vercel.app; every other branch/PR gets a preview deployment (behind Vercel login).
-The canonical URL is set in two places: `site` in `astro.config.ts` and `site.url` in `src/data/site.ts`.
+The canonical URL is set in one place, `site` in `astro.config.ts` (`site.url` reads it).
 
 ## Live activity
 

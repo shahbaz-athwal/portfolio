@@ -8,7 +8,6 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
-    updated: z.coerce.date().optional(),
     /** Unpublished posts are built in dev only. */
     published: z.boolean().default(true),
   }),

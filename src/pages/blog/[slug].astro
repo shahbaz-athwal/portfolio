@@ -17,7 +17,7 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<Base title={post.data.title} description={post.data.description} og={`blog/${post.id}`} type="article">
+<Base post={post}>
   <article>
     <a href="/blog" class="font-mono text-xs text-stone-500 transition-colors hover:text-stone-900 dark:hover:text-stone-100">← blog</a>
     <header class="mt-6 mb-10">

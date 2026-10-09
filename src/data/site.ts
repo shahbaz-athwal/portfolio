@@ -5,6 +5,7 @@ import dashSocial from "@/assets/images/dashsocial.png";
 import portfolio from "@/assets/images/portfolio.png";
 import studyLink from "@/assets/images/study-link.png";
 import whisperella from "@/assets/images/whisperella.png";
+import type { IconName } from "@/components/Icon.astro";
 
 /**
  * Single source of truth for site content. Edit this file to change
@@ -13,15 +14,35 @@ import whisperella from "@/assets/images/whisperella.png";
 
 export const site = {
   name: "Shahbaz Singh",
-  title: "Shahbaz Singh",
   role: "Full Stack Developer",
-  url: "https://shbz-me.vercel.app",
+  // Comes from `site` in astro.config.ts, the single canonical origin.
+  url: import.meta.env.SITE,
   description: "A full stack developer based in Canada.",
+  bio: "Senior year computer science student with 2 years of experience in full stack development, currently focusing on backend and DevOps.",
   twitter: "@shahcodes",
   repo: "https://github.com/shahbaz-athwal/portfolio",
   /** Discord user id used for Lanyard live activity. */
   discordId: "685471362961244160",
+  /** Whisperella username that receives the contact form's anonymous messages. */
+  whisperella: "shahbazathwal2107",
 } as const;
+
+/** <head> title/description and OG image text for each static page; keys are OG image slugs. */
+export const pages = {
+  index: { title: site.name, description: site.description },
+  details: {
+    title: "Details",
+    description: "Experience, education, and tech stack.",
+  },
+  blog: { title: "Blog", description: "Thoughts, notes, and ideas." },
+  contact: {
+    title: "Contact",
+    description: "Get in touch for questions or collaborations.",
+  },
+  "404": { title: "Not found", description: "This page doesn't exist." },
+} satisfies Record<string, { title: string; description: string }>;
+
+export type Page = keyof typeof pages;
 
 export type NavLink = { label: string; href: string };
 
@@ -36,7 +57,7 @@ export type Social = {
   label: string;
   handle: string;
   href: string;
-  icon: "mail" | "github" | "linkedin" | "x";
+  icon: IconName;
 };
 
 export const socials: Social[] = [
@@ -120,7 +141,7 @@ export const projects: Project[] = [
   {
     title: "Portfolio",
     description: "This site — portfolio and blog",
-    href: "https://shbz-me.vercel.app",
+    href: site.url,
     code: "https://github.com/shahbaz-athwal/portfolio",
     image: portfolio,
     tags: ["Astro", "MDX", "Tailwind", "Takumi", "Lanyard"],
