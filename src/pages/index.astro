@@ -14,13 +14,10 @@ import Base from "@/layouts/Base.astro";
     <p data-reveal style="--i: 1" class="text-lg leading-relaxed">
       {site.description} {site.bio} Proficient in{" "}
       {
-        skillsHighlight.map((skill, i) => (
-          <>
-            <span class="font-medium text-stone-950 dark:text-stone-100">{skill}</span>
-            {i < skillsHighlight.length - 2 ? ", " : i === skillsHighlight.length - 2 ? ", and " : "."}
-          </>
-        ))
-      }
+        new Intl.ListFormat("en").formatToParts(skillsHighlight).map((part) =>
+          part.type === "element" ? <span class="font-medium text-stone-950 dark:text-stone-100">{part.value}</span> : part.value,
+        )
+      }.
     </p>
     <ul data-reveal style="--i: 2" class="flex gap-4 text-stone-500">
       {

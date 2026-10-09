@@ -13,36 +13,24 @@ import { site } from "@/data/site";
 const asset = (path: string) =>
   readFile(join(process.cwd(), "src/assets", path));
 
-let renderer: Promise<{ renderer: Renderer; avatar: Buffer }> | undefined;
-
-function setup() {
-  renderer ??= (async () => {
-    const [bold, regular, avatar] = await Promise.all([
-      asset("fonts/Geist-Bold.ttf"),
-      asset("fonts/Geist-Regular.ttf"),
-      asset("images/profile.png"),
-    ]);
-    const r = new Renderer();
-    await r.registerFont({ name: "Geist", data: bold, weight: 700 });
-    await r.registerFont({ name: "Geist", data: regular, weight: 400 });
-    return { renderer: r, avatar };
-  })();
-  return renderer;
-}
+const [font, avatar] = await Promise.all([
+  asset("fonts/inter-variable.woff2"),
+  asset("images/profile.png"),
+]);
+const renderer = new Renderer();
+await renderer.registerFont({ name: "Inter", data: font });
 
 export async function renderOgImage({
   title,
   description,
 }: {
   title: string;
-  description?: string | undefined;
-}): Promise<Buffer> {
-  const { renderer, avatar } = await setup();
-
+  description: string;
+}) {
   const node = container({
     tw: "flex h-full w-full flex-col justify-between bg-[#0c0a09] p-20 text-stone-50",
     style: {
-      fontFamily: "Geist",
+      fontFamily: "Inter",
       backgroundImage:
         "radial-gradient(circle at 85% 0%, rgba(120,113,108,0.35), transparent 55%)",
     },
@@ -50,15 +38,15 @@ export async function renderOgImage({
       container({
         tw: "flex flex-col",
         children: [
-          text(title, {}),
-          ...(description ? [text(description, {})] : []),
-        ].map((child, i) => ({
-          ...child,
-          tw:
-            i === 0
-              ? "text-[72px] font-bold leading-[1.05] tracking-tight"
-              : "mt-6 max-w-[900px] text-[30px] leading-snug text-stone-400",
-        })),
+          text({
+            text: title,
+            tw: "text-[72px] font-bold leading-[1.05] tracking-tight",
+          }),
+          text({
+            text: description,
+            tw: "mt-6 max-w-[900px] text-[30px] leading-snug text-stone-400",
+          }),
+        ],
       }),
       container({
         tw: "flex items-center",

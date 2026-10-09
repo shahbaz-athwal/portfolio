@@ -16,7 +16,7 @@ import { site } from "@/data/site";
     Live
   </h2>
 
-  <a data-slot="spotify" hidden target="_blank" rel="noopener noreferrer" class="activity-card group">
+  <a data-field="spotify" hidden target="_blank" rel="noopener noreferrer" class="activity-card group">
     <img data-field="art" alt="" width="48" height="48" class="size-12 shrink-0 rounded-md bg-stone-200 object-cover dark:bg-stone-800" />
     <div class="min-w-0 flex-1">
       <p class="truncate text-sm font-medium text-stone-900 group-hover:underline dark:text-stone-100" data-field="song"></p>
@@ -31,7 +31,7 @@ import { site } from "@/data/site";
     </div>
   </a>
 
-  <div data-slot="code" hidden class="activity-card">
+  <div data-field="code" hidden class="activity-card">
     <img data-field="icon" alt="" width="48" height="48" class="size-12 shrink-0 rounded-md bg-stone-200 object-cover dark:bg-stone-800" />
     <div class="min-w-0 flex-1">
       <p class="truncate text-sm font-medium text-stone-900 dark:text-stone-100" data-field="name"></p>
@@ -61,7 +61,6 @@ import { site } from "@/data/site";
     application_id?: string;
     details?: string;
     state?: string;
-    timestamps?: { start?: number; end?: number };
     assets?: { large_image?: string; large_text?: string };
   };
 
@@ -75,7 +74,6 @@ import { site } from "@/data/site";
   };
 
   type Presence = {
-    listening_to_spotify: boolean;
     spotify: Spotify | null;
     activities: Activity[];
   };
@@ -147,11 +145,11 @@ import { site } from "@/data/site";
   let ticker: number | undefined;
 
   function render(root: HTMLElement, presence: Presence) {
-    const spotify = presence.listening_to_spotify ? presence.spotify : null;
+    const spotify = presence.spotify;
     const code = presence.activities.find((a) => EDITORS.has(a.name));
 
-    renderSpotify(slot(root, "spotify"), spotify);
-    renderCode(slot(root, "code"), code);
+    renderSpotify(field<HTMLAnchorElement>(root, "spotify"), spotify);
+    renderCode(field(root, "code"), code);
     root.hidden = !spotify && !code;
   }
 
@@ -194,10 +192,6 @@ import { site } from "@/data/site";
     field(el, "name").textContent = code.name;
     field(el, "details").textContent = code.details ?? "";
     field(el, "state").textContent = code.state ?? "";
-  }
-
-  function slot<T extends HTMLElement = HTMLAnchorElement>(root: HTMLElement, name: string) {
-    return root.querySelector(`[data-slot="${name}"]`) as T;
   }
 
   function field<T extends HTMLElement = HTMLElement>(root: HTMLElement, name: string) {
