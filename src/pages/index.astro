@@ -37,20 +37,18 @@ import Base from "@/layouts/Base.astro";
     </ul>
   </section>
 
-  <div data-reveal style="--i: 3" class="mt-10">
-    <LiveActivity />
-  </div>
-
   <section class="mt-16">
-    <h2 data-reveal style="--i: 4" class="mb-6 text-sm font-medium text-stone-500">Projects</h2>
+    <h2 data-reveal style="--i: 3" class="mb-6 text-sm font-medium text-stone-500">Projects</h2>
     <div class="grid gap-10 sm:grid-cols-2 sm:gap-x-6">
       {
         projects.map((project, i) => (
-          <div data-reveal style={`--i: ${5 + i}`}>
+          <div data-reveal style={`--i: ${4 + i}`}>
             <ProjectCard project={project} />
           </div>
         ))
       }
     </div>
   </section>
+
+  <LiveActivity />
 </Base>

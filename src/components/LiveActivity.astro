@@ -7,7 +7,7 @@
 import { site } from "@/data/site";
 ---
 
-<section data-live-activity data-user={site.discordId} hidden class="space-y-2">
+<section data-live-activity data-user={site.discordId} hidden class="mt-16 space-y-2">
   <h2 class="flex items-center gap-2 font-mono text-xs text-stone-500">
     <span class="relative flex size-1.5">
       <span class="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-60"></span>
@@ -83,32 +83,66 @@ import { site } from "@/data/site";
   const EDITORS = new Set(["Visual Studio Code", "Cursor", "Zed"]);
 
   const root = document.querySelector<HTMLElement>("[data-live-activity]");
-  if (root?.dataset.user) connect(root, root.dataset.user);
+  const userId = root?.dataset.user;
 
-  function connect(root: HTMLElement, userId: string, attempt = 0) {
-    const ws = new WebSocket("wss://api.lanyard.rest/socket");
-    let heartbeat: number | undefined;
+  let ws: WebSocket | undefined;
+  let heartbeat: number | undefined;
+  let reconnect: number | undefined;
+  let attempt = 0;
 
-    ws.addEventListener("message", (event) => {
+  // Socket only while visible: an open socket blocks bfcache and keeps hidden tabs busy.
+  function connect() {
+    if (!root || !userId || ws) return;
+    window.clearTimeout(reconnect);
+    const socket = new WebSocket("wss://api.lanyard.rest/socket");
+    ws = socket;
+
+    socket.addEventListener("message", (event) => {
+      if (socket !== ws) return; // a socket dropped by disconnect() can still deliver events
       const msg = JSON.parse(event.data);
       if (msg.op === 1) {
         heartbeat = window.setInterval(
-          () => ws.send(JSON.stringify({ op: 3 })),
+          () => socket.send(JSON.stringify({ op: 3 })),
           msg.d.heartbeat_interval,
         );
-        ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: userId } }));
+        socket.send(JSON.stringify({ op: 2, d: { subscribe_to_id: userId } }));
+      } else if (msg.t === "INIT_STATE") {
+        // Reset only once subscribed: a server that drops right after Hello must keep backing off.
         attempt = 0;
-      } else if (msg.t === "INIT_STATE" || msg.t === "PRESENCE_UPDATE") {
+        render(root, msg.d as Presence);
+      } else if (msg.t === "PRESENCE_UPDATE") {
         render(root, msg.d as Presence);
       }
     });
 
-    ws.addEventListener("close", () => {
+    socket.addEventListener("close", () => {
+      if (socket !== ws) return; // already dropped by disconnect()
       window.clearInterval(heartbeat);
+      ws = undefined;
+      if (document.hidden) return;
       const delay = Math.min(1000 * 2 ** attempt, 30_000);
-      window.setTimeout(() => connect(root, userId, attempt + 1), delay);
+      attempt++;
+      reconnect = window.setTimeout(connect, delay);
     });
   }
+
+  function disconnect() {
+    window.clearTimeout(reconnect);
+    window.clearInterval(heartbeat);
+    ws?.close();
+    ws = undefined;
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) disconnect();
+    else connect();
+  });
+  // Back/forward cache restores skip the load path, so reconnect here too.
+  window.addEventListener("pageshow", () => {
+    if (!document.hidden) connect();
+  });
+
+  if (!document.hidden) connect();
 
   let ticker: number | undefined;
 
