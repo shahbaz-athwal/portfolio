@@ -9,6 +9,7 @@ export const GET: APIRoute = async (context) => {
     title: site.name,
     description: site.description,
     site: context.site ?? site.url,
+    trailingSlash: false,
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,
