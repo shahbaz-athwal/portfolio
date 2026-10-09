@@ -2,27 +2,21 @@
 import { Font } from "astro:assets";
 import Footer from "@/components/Footer.astro";
 import Nav from "@/components/Nav.astro";
-import { site, socials } from "@/data/site";
+import { education, type Page, pages, site, socials } from "@/data/site";
+import type { Post } from "@/lib/posts";
 import { cleanPath } from "@/lib/url";
 import "@/styles/global.css";
 
-interface Props {
-  /** Page title; the site name is appended. Omit on the home page. */
-  title?: string;
-  description?: string;
-  /** OG image key, matching a route in `src/pages/og/[...slug].png.ts`. */
-  og?: string;
-  type?: "website" | "article";
-}
+/** A static page (a `pages` key) or a blog post; sets <head>, the OG image and og:type. */
+type Props = { page: Page } | { post: Post };
 
-const {
-  title,
-  description = site.description,
-  og = "index",
-  type = "website",
-} = Astro.props;
+const props = Astro.props;
+const { title, description, og, type } =
+  "post" in props
+    ? { ...props.post.data, og: `blog/${props.post.id}`, type: "article" }
+    : { ...pages[props.page], og: props.page, type: "website" };
 
-const fullTitle = title ? `${title} — ${site.name}` : site.name;
+const fullTitle = og === "index" ? site.name : `${title} — ${site.name}`;
 const canonical = new URL(cleanPath(Astro.url.pathname), Astro.site);
 const ogImage = new URL(`/og/${og}.png`, Astro.site);
 
@@ -32,8 +26,10 @@ const personJsonLd = {
   name: site.name,
   jobTitle: site.role,
   url: site.url,
-  sameAs: socials.filter((s) => s.icon !== "mail").map((s) => s.href),
-  alumniOf: "Acadia University",
+  sameAs: socials
+    .filter((s) => s.href.startsWith("https://"))
+    .map((s) => s.href),
+  alumniOf: education.map((e) => e.org),
 };
 
 const speculationRules = {

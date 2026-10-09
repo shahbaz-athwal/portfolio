@@ -2,19 +2,17 @@
 import Icon from "@/components/Icon.astro";
 import LiveActivity from "@/components/LiveActivity.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
-import { projects, skillsHighlight, socials } from "@/data/site";
+import { projects, site, skillsHighlight, socials } from "@/data/site";
 import Base from "@/layouts/Base.astro";
 ---
 
-<Base>
+<Base page="index">
   <section class="space-y-5">
     <h1 data-reveal class="text-3xl font-semibold tracking-tight text-stone-950 dark:text-stone-50">
       Hi, I'm Shahbaz
     </h1>
     <p data-reveal style="--i: 1" class="text-lg leading-relaxed">
-      A full stack developer based in Canada. Senior year computer science
-      student with 2 years of experience in full stack development, currently
-      focusing on backend and DevOps. Proficient in{" "}
+      {site.description} {site.bio} Proficient in{" "}
       {
         skillsHighlight.map((skill, i) => (
           <>
