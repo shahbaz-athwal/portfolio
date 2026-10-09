@@ -76,5 +76,10 @@ const speculationRules = {
       <slot />
     </main>
     <Footer />
+    <!-- Bottom scroll fade: content dissolves into the page background (with a hint of blur) as it scrolls off the bottom edge. -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none fixed inset-x-0 bottom-0 z-20 h-(--fade-bottom-height) bg-linear-to-b from-transparent to-stone-50 mask-t-from-25% backdrop-blur-[1px] dark:to-stone-950"
+    ></div>
   </body>
 </html>

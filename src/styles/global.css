@@ -9,6 +9,10 @@
 }
 
 @layer base {
+  :root {
+    /* Shared by the fixed bottom fade (Base.astro) and the footer spacer that keeps content clear of it. */
+    --fade-bottom-height: --spacing(24);
+  }
   html {
     color-scheme: light;
     scrollbar-gutter: stable;
