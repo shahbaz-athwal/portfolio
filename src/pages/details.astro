@@ -7,18 +7,19 @@ const sections = [
   { heading: "Experience", roles: experience },
   { heading: "Education", roles: education },
 ];
+let n = 0;
 ---
 
 <Base title="Details" description="Experience, education, and tech stack." og="details">
-  <h1 data-reveal class="text-3xl font-semibold tracking-tight text-stone-950 dark:text-stone-50">Details</h1>
+  <h1 data-reveal style={`--i: ${n++}`} class="text-3xl font-semibold tracking-tight text-stone-950 dark:text-stone-50">Details</h1>
 
   {
-    sections.map(({ heading, roles }, s) => (
+    sections.map(({ heading, roles }) => (
       <section class="mt-12">
-        <h2 data-reveal style={`--i: ${1 + s * 3}`} class="mb-6 text-sm font-medium text-stone-500">{heading}</h2>
+        <h2 data-reveal style={`--i: ${n++}`} class="mb-6 text-sm font-medium text-stone-500">{heading}</h2>
         <ol class="space-y-8">
-          {roles.map((role, i) => (
-            <li data-reveal style={`--i: ${2 + s * 3 + i}`} class="flex gap-4">
+          {roles.map((role) => (
+            <li data-reveal style={`--i: ${n++}`} class="flex gap-4">
               <div class="grid size-10 shrink-0 place-items-center rounded-full bg-white ring-1 ring-stone-200 dark:ring-stone-800">
                 <Image src={role.logo} alt="" width={48} class="size-6 object-contain" />
               </div>
@@ -52,11 +53,11 @@ const sections = [
   }
 
   <section class="mt-12">
-    <h2 data-reveal style="--i: 8" class="mb-6 text-sm font-medium text-stone-500">Stack</h2>
+    <h2 data-reveal style={`--i: ${n++}`} class="mb-6 text-sm font-medium text-stone-500">Stack</h2>
     <dl class="space-y-4">
       {
-        stack.map(({ category, items }, i) => (
-          <div data-reveal style={`--i: ${9 + i}`} class="grid gap-1 sm:grid-cols-[8rem_1fr] sm:gap-4">
+        stack.map(({ category, items }) => (
+          <div data-reveal style={`--i: ${n++}`} class="grid gap-1 sm:grid-cols-[8rem_1fr] sm:gap-4">
             <dt class="text-sm text-stone-500">{category}</dt>
             <dd class="text-sm text-stone-900 dark:text-stone-200">{items.join(" · ")}</dd>
           </div>
